@@ -2,8 +2,11 @@
     <ul>
         {% for question in question_list %}
             <li>
-                <a href="/myapp/{{question.id}}">{{question.question_text }}</a>
-                <!-- question is listed as link -->>
+                <a href="{% url 'myapp:detail' question.id %}">{{question.question_text}}</a>
+                
+                <!-- we use 'myapp:details' so that it won't get mix up with other application's detail view, you defined app_name = 'myapp' in urls.py -->
+
+                <!-- or you can use this <a href="/myapp/{{question.id}}">{{question.question_text }}</a> -->
             </li>
         {% endfor %}
     </ul>
