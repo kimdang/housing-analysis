@@ -1,14 +1,15 @@
 from django.urls import path 
-from . import views 
+
+from . import views
 
 app_name = 'myapp'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('<int:question_id>', views.detail, name='detail'),
-    path('<int:question_id>/results/', views.result, name='result'),
-    path('comment', views.comment, name='comment')
-    # the name value is called by {% url %} template tag in index.html 
+    # path('<int:question_id>', views.detail, name='detail'),
+    # path('<int:question_id>/results/', views.result, name='result'),
+    # path('comment', views.comment, name='comment')
+    # # the name value is called by {% url %} template tag in index.html 
 ]
 
 """
