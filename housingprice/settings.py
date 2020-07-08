@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 
     # Above applications are included by default as a convenience for common sense.
     
-    'myapp.apps.MyappConfig' # If you follow this path, you'll see MyappConfig (Django probably created automatically)
+    'myapp.apps.MyappConfig', # If you follow this path, you'll see MyappConfig (Django probably created automatically)
 ]
 
 MIDDLEWARE = [
@@ -79,8 +79,11 @@ WSGI_APPLICATION = 'housingprice.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'housing_database',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': "10.0.0.10",
     }
 }
 

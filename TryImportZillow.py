@@ -1,4 +1,3 @@
-import sqlite3
 import pandas as pd 
 
 data = pd.read_csv("ZillowByCity.csv")
@@ -24,7 +23,6 @@ for i in range(len(regionID)):
     query = "INSERT INTO myapp_indexTable (regionID, regionName, regionState) VALUES %s" %(text)
     print(query)
     c.execute(query)
-
 
 
 
