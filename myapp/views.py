@@ -1,11 +1,18 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse 
 from django.http import Http404
+from execute import run_query
 
 from django.template import loader
 
 def index(request):
     return HttpResponse("This is index page.")
+
+def housing(request):
+    query = "SELECT regionID FROM myapp_indextable WHERE (regionName= 'Sacramento' AND regionState='CA')"
+    location = run_query(query, fetch=True, fetch_option='fetchone')
+    location_id = location['regionID']
+    return HttpResponse(location_id)
 
 
 # from .models import Question

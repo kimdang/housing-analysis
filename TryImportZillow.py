@@ -1,6 +1,9 @@
 import pandas as pd 
+import execute
 
-data = pd.read_csv("ZillowByCity.csv")
+file = ("ZillowByCity.csv")
+
+data = pd.read_csv(file)
 cityCount = data["RegionName"].count()
 entryCount = len(data.columns)-8  # First 8 columns are not home prices.
 
@@ -15,18 +18,15 @@ regionState = subdata['StateName'].tolist()
 
 
 
-conn = sqlite3.connect('db.sqlite3')
-c = conn.cursor()
 
-for i in range(len(regionID)):
-    text = "(%s, '%s', '%s')" %(regionID[i], regionName[i], regionState[i])
-    query = "INSERT INTO myapp_indexTable (regionID, regionName, regionState) VALUES %s" %(text)
-    print(query)
-    c.execute(query)
+# for i in range(len(regionID)):
+#     text = "(%s, '%s', '%s')" %(regionID[i], regionName[i], regionState[i])
+#     query = "INSERT INTO myapp_indextable (regionID, regionName, regionState) VALUES %s" %(text)
+#     execute.run_query(query)
 
 
 
-print('Data inserted.')
+# print('Data inserted.')
 
 
 
