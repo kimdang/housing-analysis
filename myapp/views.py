@@ -5,8 +5,13 @@ from execute import run_query
 
 from django.template import loader
 
+from myapp.models import testState
+
+
 def index(request):
-    return HttpResponse("This is index page.")
+    mylist = testState.objects.all()
+    output = ', '.join([str(q.testlist) for q in mylist])
+    return HttpResponse(output)
 
 def housing(request):
     query = "SELECT regionID FROM myapp_indextable WHERE (regionName= 'Sacramento' AND regionState='CA')"

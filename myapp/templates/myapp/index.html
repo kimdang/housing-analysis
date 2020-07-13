@@ -1,4 +1,4 @@
-{% if question_list %}
+{% if mylist %}
     <ul>
         {% for question in question_list %}
             <li>
@@ -11,5 +11,5 @@
         {% endfor %}
     </ul>
 {% else %}
-    <p> No content available.</p>
+    <p> {{testitem.testlist}} </p>
 {% endif %}
