@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse 
 from django.http import Http404
 from execute import run_query
+from . import forms
 
 from django.template import loader
 
@@ -10,8 +11,8 @@ from myapp.models import testState
 
 def index(request):
     mylist = testState.objects.all()
-    output = ', '.join([str(q.testlist) for q in mylist])
-    return HttpResponse(output)
+    mydict = {"hi": "Lam", "hello": "Ngan"}
+    return render(request, "myapp/test.html", mydict)
 
 def housing(request):
     query = "SELECT regionID FROM myapp_indextable WHERE (regionName= 'Sacramento' AND regionState='CA')"
@@ -19,6 +20,16 @@ def housing(request):
     location_id = location['regionID']
     return HttpResponse(location_id)
 
+def form_name_view(request):
+    form = forms.FormName()
+    if request.method == "POST":
+        form = forms.FormName(request.POST)
+        if form.is_valid():
+            print("Form Validation SUCCESS. Print in console.")
+            print("Name"+form.cleaned_data['name'])
+            print("Email"+form.cleaned_data['email'])
+            print("Text"+form.cleaned_data['text'])
+    return render(request, "myapp/form_name.html", {'form': form})
 
 # from .models import Question
 
