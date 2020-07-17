@@ -1,4 +1,19 @@
-
-{% if ngan %}
-    <h1>{{ hi }}</h1>
-{% endif %}
+<html>
+    <head>
+        <title>Test Database</title>
+    </head>
+    <body>
+        {% if city %}
+            <table>
+                {% for c in city %}
+                <tr>
+                    <td>{{ c.regionID }}</td>
+                    <td>{{ c.regionName}}</td>
+                    <td>{{ c.regionState}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            
+        {% endif %}
+    </body>
+</html>

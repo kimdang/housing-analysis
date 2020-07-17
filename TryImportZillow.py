@@ -18,15 +18,15 @@ regionState = subdata['StateName'].tolist()
 
 
 
+"""
+INSERT DATA INTO myapp_indextable TABLE 
+"""
+for i in range(len(regionID)):
+    text = "(%s, '%s', '%s')" %(regionID[i], regionName[i], regionState[i])
+    query = "INSERT INTO myapp_indextable (regionID, regionName, regionState) VALUES %s" %(text)
+    execute.run_query(query)
 
-# for i in range(len(regionID)):
-#     text = "(%s, '%s', '%s')" %(regionID[i], regionName[i], regionState[i])
-#     query = "INSERT INTO myapp_indextable (regionID, regionName, regionState) VALUES %s" %(text)
-#     execute.run_query(query)
-
-
-
-# print('Data inserted.')
+print('Data insertion completed.')
 
 
 

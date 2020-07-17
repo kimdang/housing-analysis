@@ -6,29 +6,27 @@ from . import forms
 
 from django.template import loader
 
-from myapp.models import testState
+from myapp.models import testState, indexTable
 
 
 def index(request):
     mylist = testState.objects.all()
     mydict = {"hi": "Lam", "hello": "Ngan"}
-    return render(request, "myapp/test.html", mydict)
+    return render(request, "myapp/index.html", mydict)
 
-def housing(request):
-    query = "SELECT regionID FROM myapp_indextable WHERE (regionName= 'Sacramento' AND regionState='CA')"
-    location = run_query(query, fetch=True, fetch_option='fetchone')
-    location_id = location['regionID']
-    return HttpResponse(location_id)
+def test_db(request):
+    city = indexTable.objects.order_by("regionID")
+    return render(request, "myapp/test.html", {"city" : city})
+
 
 def form_name_view(request):
     form = forms.FormName()
     if request.method == "POST":
         form = forms.FormName(request.POST)
         if form.is_valid():
-            print("Form Validation SUCCESS. Print in console.")
-            print("Name"+form.cleaned_data['name'])
-            print("Email"+form.cleaned_data['email'])
-            print("Text"+form.cleaned_data['text'])
+            print("VALIDATION COMPLETED.")
+            print("Name: " + form.cleaned_data['name'])
+
     return render(request, "myapp/form_name.html", {'form': form})
 
 # from .models import Question

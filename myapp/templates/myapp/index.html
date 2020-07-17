@@ -1,15 +1,18 @@
-{% if mylist %}
-    <ul>
-        {% for question in question_list %}
-            <li>
-                <a href="{% url 'myapp:detail' question.id %}">{{question.question_text}}</a>
+<html>
+    <head>
+        <title>Index Page</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="jumbotron">
+                <h1>WELCOME TO HOME PAGE</h1>
                 
-                <!-- we use 'myapp:details' so that it won't get mix up with other application's detail view, you defined app_name = 'myapp' in urls.py -->
+                <a href="{% url 'myapp:form_name' %}">Please follow this link enter your information.</a>
+                <!-- go to urls.py
+                you will see app_name = 'myapp'
+                combine app_name with a view to point to that view -->
+            </div>
 
-                <!-- or you can use this <a href="/myapp/{{question.id}}">{{question.question_text }}</a> -->
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p> {{testitem.testlist}} </p>
-{% endif %}
+        </div>
+    </body>
+</html>
