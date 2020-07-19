@@ -7,8 +7,10 @@ class indexTable (models.Model):
     def __str__(self):
         return self.regionID
 
-class testState (models.Model):
-    testlist = models.IntegerField(default=0)
+class userInformation (models.Model):
+    fname = models.CharField(max_length=100)
+    lname = models.CharField(max_length=100)
+    email = models.EmailField()
 
 
 

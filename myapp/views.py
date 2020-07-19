@@ -1,16 +1,15 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse 
+# from django.http import HttpResponse 
 from django.http import Http404
 from execute import run_query
-from . import forms
 
 from django.template import loader
 
-from myapp.models import testState, indexTable
+from myapp.models import indexTable
 
+from myapp.forms import NewUser, FormName
 
 def index(request):
-    mylist = testState.objects.all()
     mydict = {"hi": "Lam", "hello": "Ngan"}
     return render(request, "myapp/index.html", mydict)
 
@@ -20,14 +19,30 @@ def test_db(request):
 
 
 def form_name_view(request):
-    form = forms.FormName()
+    form = FormName()
     if request.method == "POST":
-        form = forms.FormName(request.POST)
+        form = FormName(request.POST)
         if form.is_valid():
             print("VALIDATION COMPLETED.")
             print("Name: " + form.cleaned_data['name'])
 
     return render(request, "myapp/form_name.html", {'form': form})
+
+
+def users(request):
+    form = NewUser()
+    if request.method == "POST":
+        form = NewUser(request.POST)
+        if form.is_valid():
+            form.save(commit=True)
+            return index(request)
+        else:
+            print("FORM IS INVALID.")
+    return render(request, 'myapp/users.html', {'form':form})
+
+
+
+
 
 # from .models import Question
 
