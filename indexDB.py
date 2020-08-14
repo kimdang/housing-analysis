@@ -21,8 +21,8 @@ print("Do you want to populate the index table with this dataset? (y/n) \n")
 proceed = input()
 
 
-
-####### THIS IS AN ATTEMPT TO IMPORT DATA IN 1 SINGLE QUERY ########
+#####################################################################
+####### THIS IS AN ATTEMPT TO IMPORT DATA IN 1 SINGLE QUERY #########
 # if proceed == "y":
 #     total = ""
 #     for i in range(cityCount):
@@ -35,12 +35,24 @@ proceed = input()
         
 # insert_query = "INSERT INTO myapp_indextable (regionID, regionName, regionState) VALUES %s" %(total)
 # execute.run_query(insert_query)
+#####################################################################
 
+
+
+RegionName_list = []
+for i in range(cityCount):
+    text = data['RegionName'][i]
+    new_text = text.replace("'", "")
+    RegionName_list.append(new_text)
+
+data['NewRegionName'] = RegionName_list
+# Some names contain single quote that SQL query cannot be processed
+# This is work-around
 
 
 if proceed == "y":
     for i in range(cityCount):
-        text = "(%s, '%s', '%s')" %(data['RegionID'][i], data['RegionName'][i], data['StateName'][i])
+        text = "(%s, '%s', '%s')" %(data['RegionID'][i], data['NewRegionName'][i], data['StateName'][i])
         query = "INSERT INTO myapp_indextable (regionID, regionName, regionState) VALUES %s" %(text)
         execute.run_query(query)
 
