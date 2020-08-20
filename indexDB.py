@@ -21,24 +21,6 @@ print("Do you want to populate the index table with this dataset? (y/n) \n")
 proceed = input()
 
 
-#####################################################################
-####### THIS IS AN ATTEMPT TO IMPORT DATA IN 1 SINGLE QUERY #########
-# if proceed == "y":
-#     total = ""
-#     for i in range(cityCount):
-#         if (i != (cityCount-1)):
-#             text = "(%s, %s, %s), " %(data['RegionID'][i], data['RegionName'][i], data['StateName'][i])
-#         else:
-#             text = "(%s, %s, %s) " %(data['RegionID'][i], data['RegionName'][i], data['StateName'][i])
-#         total = total + text 
-        
-        
-# insert_query = "INSERT INTO myapp_indextable (regionID, regionName, regionState) VALUES %s" %(total)
-# execute.run_query(insert_query)
-#####################################################################
-
-
-
 RegionName_list = []
 for i in range(cityCount):
     text = data['RegionName'][i]
@@ -57,3 +39,24 @@ if proceed == "y":
         execute.run_query(query)
 
 print('Done!')
+
+
+
+
+
+
+#####################################################################
+####### THIS IS AN ATTEMPT TO IMPORT DATA IN 1 SINGLE QUERY #########
+# if proceed == "y":
+#     total = ""
+#     for i in range(cityCount):
+#         if (i != (cityCount-1)):
+#             text = "(%s, %s, %s), " %(data['RegionID'][i], data['RegionName'][i], data['StateName'][i])
+#         else:
+#             text = "(%s, %s, %s) " %(data['RegionID'][i], data['RegionName'][i], data['StateName'][i])
+#         total = total + text 
+        
+        
+# insert_query = "INSERT INTO myapp_indextable (regionID, regionName, regionState) VALUES %s" %(total)
+# execute.run_query(insert_query)
+#####################################################################
