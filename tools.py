@@ -2,7 +2,7 @@ import pandas as pd
 import datetime
 
 def clean (rawDF, ID, dropcolumn):
-    print("Processing RegionID %s" %(ID))
+    print("Preparing RegionID %s data set." %(ID))
     city = rawDF.loc[rawDF['RegionID'] == ID]
     city = city.T
     city = city.drop(city.index[0:dropcolumn])

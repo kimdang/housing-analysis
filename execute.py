@@ -10,7 +10,6 @@ def run_query(query, fetch=False, fetch_option='fetchone'):
                         db="housing_database",
                         cursorclass=pymysql.cursors.DictCursor)
 
-    print(query)
 
     with conn.cursor() as cursor:
         cursor.execute(query)
