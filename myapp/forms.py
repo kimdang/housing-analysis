@@ -19,6 +19,11 @@ class FormName(forms.Form):
             raise forms.ValidationError("EMAILS DO NOT MATCH, PLEASE CHECK!")
 
 
+class InputCity(forms.Form):
+    city = forms.CharField()
+    state = forms.CharField()
+    
+
 class NewUser(forms.ModelForm):
     # add your custom validators here
     class Meta:

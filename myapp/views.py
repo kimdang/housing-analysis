@@ -7,7 +7,9 @@ from django.template import loader
 
 from myapp.models import indexTable
 
-from myapp.forms import NewUser, FormName
+from myapp.forms import NewUser, FormName, InputCity
+
+from .. import execute
 
 def index(request):
     mydict = {"hi": "Lam", "hello": "Ngan"}
@@ -40,9 +42,14 @@ def users(request):
             print("FORM IS INVALID.")
     return render(request, 'myapp/users.html', {'form':form})
 
+######## YOUR WORK STARTS HERE ######
 
 
+class Housing ():
+    def get(self, request, state, city):
 
+        getIDquery = "SELECT * FROM myapp_indextable WHERE (regionName = '%s' and regionState = '%s')" %(city, state)
+        regionID = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionID']
 
 # from .models import Question
 
