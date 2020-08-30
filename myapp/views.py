@@ -1,55 +1,80 @@
 from django.shortcuts import render, get_object_or_404
 # from django.http import HttpResponse 
 from django.http import Http404
-from execute import run_query
+
 
 from django.template import loader
 
 from myapp.models import indexTable
 
-from myapp.forms import NewUser, FormName, InputCity
+from myapp.forms import InputCity
 
-from .. import execute
+import execute
 
-def index(request):
-    mydict = {"hi": "Lam", "hello": "Ngan"}
-    return render(request, "myapp/index.html", mydict)
+# def index(request):
+#     mydict = {"hi": "Lam", "hello": "Ngan"}
+#     return render(request, "myapp/index.html", mydict)
 
-def test_db(request):
-    city = indexTable.objects.order_by("regionID")
-    return render(request, "myapp/test.html", {"city" : city})
-
-
-def form_name_view(request):
-    form = FormName()
-    if request.method == "POST":
-        form = FormName(request.POST)
-        if form.is_valid():
-            print("VALIDATION COMPLETED.")
-            print("Name: " + form.cleaned_data['name'])
-
-    return render(request, "myapp/form_name.html", {'form': form})
+# def test_db(request):
+#     city = indexTable.objects.order_by("regionID")
+#     return render(request, "myapp/test.html", {"city" : city})
 
 
-def users(request):
-    form = NewUser()
-    if request.method == "POST":
-        form = NewUser(request.POST)
-        if form.is_valid():
-            form.save(commit=True)
-            return index(request)
-        else:
-            print("FORM IS INVALID.")
-    return render(request, 'myapp/users.html', {'form':form})
+# def form_name_view(request):
+#     form = FormName()
+#     if request.method == "POST":
+#         form = FormName(request.POST)
+#         if form.is_valid():
+#             print("VALIDATION COMPLETED.")
+#             print("Name: " + form.cleaned_data['name'])
+
+#     return render(request, "myapp/form_name.html", {'form': form})
+
+
+# def users(request):
+#     form = NewUser()
+#     if request.method == "POST":
+#         form = NewUser(request.POST)
+#         if form.is_valid():
+#             form.save(commit=True)
+#             return index(request)
+#         else:
+#             print("FORM IS INVALID.")
+#     return render(request, 'myapp/users.html', {'form':form})
 
 ######## YOUR WORK STARTS HERE ######
 
 
-class Housing ():
-    def get(self, request, state, city):
 
-        getIDquery = "SELECT * FROM myapp_indextable WHERE (regionName = '%s' and regionState = '%s')" %(city, state)
+
+def identifyTarget(request):
+
+    form = InputCity()
+   
+    return render(request, 'myapp/index.html', {'form': form})
+
+
+
+def showResult(request):
+    city = request.GET['city']
+    state = request.GET['state']
+    
+    getIDquery = "SELECT * FROM myapp_indextable WHERE (regionName = '%s' and regionState = '%s')" %(city, state)
+
+    try:
         regionID = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionID']
+    except TypeError:
+        raise Http404("Invalid Entry. Please refresh to re-try.")
+
+    
+    return render(request, 'myapp/test.html', {'result': regionID})
+
+
+
+
+
+
+
 
 # from .models import Question
 
