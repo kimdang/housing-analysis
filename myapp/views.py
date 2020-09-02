@@ -10,6 +10,7 @@ from myapp.models import indexTable
 from myapp.forms import InputCity
 
 import execute
+import tools
 
 # def index(request):
 #     mydict = {"hi": "Lam", "hello": "Ngan"}
@@ -48,9 +49,7 @@ import execute
 
 
 def identifyTarget(request):
-
     form = InputCity()
-   
     return render(request, 'myapp/index.html', {'form': form})
 
 
@@ -58,14 +57,18 @@ def identifyTarget(request):
 def showResult(request):
     city = request.GET['city']
     state = request.GET['state']
-    
+    if len(state) > 2:
+        state = "CA"
+
     getIDquery = "SELECT * FROM myapp_indextable WHERE (regionName = '%s' and regionState = '%s')" %(city, state)
 
     try:
         regionID = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionID']
     except TypeError:
-        raise Http404("Invalid Entry. Please refresh to re-try.")
+        raise Http404("Invalid Entry.")
 
+    if regionID:
+        targetDF = tools.getdatafromDB(regionID)
     
     return render(request, 'myapp/test.html', {'result': regionID})
 
