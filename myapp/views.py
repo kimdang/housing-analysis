@@ -11,6 +11,9 @@ from myapp.forms import InputCity
 
 import execute
 import tools
+import translateState
+
+import pandas as pd
 
 # def index(request):
 #     mydict = {"hi": "Lam", "hello": "Ngan"}
@@ -57,20 +60,34 @@ def identifyTarget(request):
 def showResult(request):
     city = request.GET['city']
     state = request.GET['state']
-    if len(state) > 2:
-        state = "CA"
+    
+    state = translateState.state_dictionary.get(tools.capitalize_words(state), state)
+    # Database only understand state name in term of abbreviation 
+    # This handles when user enter complete state name and/or in lowercase 
 
     getIDquery = "SELECT * FROM myapp_indextable WHERE (regionName = '%s' and regionState = '%s')" %(city, state)
 
     try:
         regionID = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionID']
     except TypeError:
-        raise Http404("Invalid Entry.")
+        raise Http404("Invalid Entry. Please check that your city and state are valid.")
 
     if regionID:
         targetDF = tools.getdatafromDB(regionID)
-    
-    return render(request, 'myapp/test.html', {'result': regionID})
+    else:
+        raise Http404("Location is not listed in our data vault.")
+
+    # Convert data into appropriat form for display
+    targetDF['dt'] = targetDF['dt'].apply(lambda x: x.strftime('%B %d, %Y'))
+    targetDF['price'] = targetDF['price'].apply(lambda x: '${:,}'.format(x))
+
+
+
+    latestdata = {'date' : targetDF['dt'].iloc[-1], 
+                    'price': targetDF['price'].iloc[-1],
+                    }
+
+    return render(request, 'myapp/test.html', latestdata)
 
 
 
@@ -117,9 +134,3 @@ def showResult(request):
 
 # def result(request, question_id):
 #     return HttpResponse("You're looking at the result of question %s." %question_id)
-
-# def comment(request, question_id):
-#     # need content here
-#     return HttpResponse("Ngan was here")
-
-

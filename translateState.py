@@ -1,4 +1,4 @@
- state_dictionary = {
+state_dictionary = {
     'Alabama': 'AL',
     'Alaska': 'AK',
     'Arizona': 'AZ',
