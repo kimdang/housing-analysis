@@ -1,11 +1,9 @@
-import execute
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 #### THIS SCRIPT WILL COMPUTE CITY AS USER REQUEST ####
 
-def getdata(regionID):
-    getdataquery = "SELECT * FROM city_%s" %(regionID)
-    target = execute.run_query(getdataquery, fetch=True, fetch_option='fetchall')
-    targetDF = pd.DataFrame(target)
-    return targetDF
-
+def plothistory(targetDF):
+    plt.plot('dt', 'price', data=targetDF)
+    plt.savefig('Example.jpg')
