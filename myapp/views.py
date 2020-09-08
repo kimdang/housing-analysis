@@ -13,8 +13,14 @@ import execute
 import tools
 import translateState
 import computecity
-
 import pandas as pd
+
+#### TO BE MOVED TO computecity.py AFTER DONE DEVELOPING ##
+import matplotlib.pyplot as plt
+import base64
+from io import BytesIO
+###
+
 
 # def index(request):
 #     mydict = {"hi": "Lam", "hello": "Ngan"}
@@ -76,18 +82,33 @@ def showResult(request):
     if regionID:
         targetDF = tools.getdatafromDB(regionID)
     else:
-        raise Http404("This location is not listed in our data vault.")
+        raise Http404("This location is not listed in our database.")
 
     
     
-    computecity.plothistory(targetDF)
+    #### TEST, TO BE MOVED AFTER DEVELOPMENT 
+    plt.plot('dt', 'price', data=targetDF)
+    plt.xlabel('year')
+    plt.ylabel('price')
+     
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+
+    graphic = base64.b64encode(image_png)
+    graphic = graphic.decode('utf-8')
+
+    print(image_png)
+    ###
 
     # Convert into appropriat form for purpose of display
     targetDF['dt'] = targetDF['dt'].apply(lambda x: x.strftime('%B %d, %Y'))
     targetDF['price'] = targetDF['price'].apply(lambda x: '${:,}'.format(x))
 
 
-    info = {'city' : tools.capitalize_words(city), 'state' : state.upper(), 'date' : targetDF['dt'].iloc[-1], 'price': targetDF['price'].iloc[-1],
+    info = {'city' : tools.capitalize_words(city), 'state' : state.upper(), 'date' : targetDF['dt'].iloc[-1], 'price': targetDF['price'].iloc[-1], 'graphic' : graphic,
             }
 
     return render(request, 'myapp/displayresult.html', info)
