@@ -16,9 +16,8 @@ import computecity
 import pandas as pd
 
 #### TO BE MOVED TO computecity.py AFTER DONE DEVELOPING ##
-import matplotlib.pyplot as plt
 import base64
-from io import BytesIO
+
 ###
 
 
@@ -83,25 +82,15 @@ def showResult(request):
         targetDF = tools.getdatafromDB(regionID)
     else:
         raise Http404("This location is not listed in our database.")
-
-    
-    
-    #### TEST, TO BE MOVED AFTER DEVELOPMENT 
-    plt.plot('dt', 'price', data=targetDF)
-    plt.xlabel('year')
-    plt.ylabel('price')
      
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    image_png = buffer.getvalue()
-    buffer.close()
+    
+
+
+    image_png = computecity.plothistory(targetDF)
 
     graphic = base64.b64encode(image_png)
     graphic = graphic.decode('utf-8')
 
-    print(image_png)
-    ###
 
     # Convert into appropriat form for purpose of display
     targetDF['dt'] = targetDF['dt'].apply(lambda x: x.strftime('%B %d, %Y'))

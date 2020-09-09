@@ -7,10 +7,15 @@
     </head>
 
     <body>
-        <p>{{date}}</p>
-        <p>{{price}}</p>
+        <link rel="stylesheet" href="showResult.css">
+        <p>The average price of single-family house is {{price}} in {{date}}.</p>
         <div>
             <img src="data:image/png;base64,{{graphic|safe}}">
         </div>
     </body>
+
+    <footer>
+        powered by Kim Dang
+        data courtesy of Zillow.com
+    </footer>
 </html>
