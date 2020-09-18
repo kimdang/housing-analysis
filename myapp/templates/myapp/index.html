@@ -1,25 +1,41 @@
+{% load static %}
+
 <!DOCTYPE html>
 
 <head>
     <meta charset="utf-8">
-    <title>Home Page</title>
+    <title>Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="{% static 'my_app/index.css' %}">
 </head>
 
 
 
 <body>
-    <div class="container">
-        <h1>Enter the city name and state</h1>
+    <div class="column">
+        <div class="intro">
+            This is introduction.
+        </div>
+    
+
+    
+        <div class="search-box">
+            <h1>Please Enter Info:</h1>
+            <form action= showResult method="GET">
+                {{form.as_p}}
+                {% csrf_token %}
+                <input type="submit" class="btn btn-primary" value="Submit">
+            </form>
+        </div>
+
+        <div class="ending">
+            This is ending.
+        </div>
+
+
     </div>
-    <div class="container">
-        <form action= showResult method="GET">
-            {{form.as_p}}
-            {% csrf_token %}
-            <input type="submit" class="btn btn-primary" value="Submit">
-        </form>
-    </div>
+    
+
 </body>
 
 

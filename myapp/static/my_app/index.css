@@ -1,0 +1,23 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.intro {
+    text-align: center;
+
+}
+
+.search-box {
+    background-image: url("doorclose.jpg");
+}
+
+.ending {
+    background-color: green
+}
