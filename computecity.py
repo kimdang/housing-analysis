@@ -7,10 +7,10 @@ from io import BytesIO
 
 
 def plothistory(targetDF):
-    fig = plt.figure(figsize=(10,5))
+    fig = plt.figure(figsize=(8,4))
     ax = fig.add_subplot(111)
     line = plt.plot('dt', 'price', data=targetDF)
-    plt.ylabel('Average Home Value')
+    plt.title("Average Home Value")
     plt.grid(b=True, color='k', linestyle='dotted', linewidth='0.5')
     ax.set_yticklabels(['${:,}'.format(int(x)) for x in ax.get_yticks().tolist()])
 

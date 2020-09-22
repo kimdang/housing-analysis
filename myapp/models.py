@@ -14,5 +14,3 @@ class userInformation (models.Model):
 
 
 
-
-

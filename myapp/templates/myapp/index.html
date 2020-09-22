@@ -12,29 +12,30 @@
 
 
 <body>
-    <div class="column">
-        <div class="intro">
-            This is introduction.
-        </div>
-    
 
-    
-        <div class="search-box">
-            <h1>Please Enter Info:</h1>
-            <form action= showResult method="GET">
-                {{form.as_p}}
-                {% csrf_token %}
-                <input type="submit" class="btn btn-primary" value="Submit">
-            </form>
-        </div>
+    <div class="container-fluid">
 
-        <div class="ending">
-            This is ending.
+        <div class="jumbotron">
+            <h1 class="display">Hello, there</h1>
+            <p>This is introduction</p>
+
         </div>
 
 
-    </div>
-    
+        <form class="form-enter" action=showResult method="GET">
+            <div>
+                {{form.city}}
+            </div>
+            <div>
+                {{form.state}}
+            </div>
+            <br>
+            {% csrf_token %}
+
+            <input class="btn btn-lg btn-primary btn-block" type="Submit" value="Search">
+
+        </form>
+
 
 </body>
 

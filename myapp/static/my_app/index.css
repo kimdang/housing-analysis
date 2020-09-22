@@ -1,23 +1,15 @@
-html, body {
-    height: 100%;
-    margin: 0;
+body {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #eee;
 }
 
-.column {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.intro {
-    text-align: center;
-
-}
-
-.search-box {
-    background-image: url("doorclose.jpg");
-}
-
-.ending {
-    background-color: green
+.form-control {
+    position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
 }

@@ -6,17 +6,45 @@
         <meta charset="utf-8">
         <title>{{city}}, {{state}}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-        <link rel="stylesheet" href="{% static 'my_app/showResult.css' %}">
+        <link rel="stylesheet" href="{% static 'my_app/displayresult.css' %}">
     </head>
 
     <body>
-        <p class="container">The average price of single-family house is {{price}} in {{date}}.</p>
-        <div>
-            <img src="data:image/png;base64,{{graphic|safe}}">
+        <div class="container">
+
+            <div class="jumbotron">
+                <form action=showResult method="GET">
+                    <div>
+                        {{form.city}}
+                    </div>
+                    <div>
+                        {{form.state}}
+                    </div>
+                    {% csrf_token %}
+        
+                    <input class="btn btn-lg btn-primary btn-block" type="Submit" value="Search">
+        
+                </form>
+            </div>
+    
+    
+    
+    
+            <div class="container-fluid">
+                <p class="container">The average price of single-family house is {{price}} in {{date}}.</p>
+                <div class=img-fluid>
+                    <img src="data:image/png;base64,{{graphic|safe}}">
+                </div>
+                <p class="container">Stay tune for more analysis in the near future...</p>
+
+            </div>
+
+
         </div>
+
+
+
     </body>
 
-    <footer>
-            data courtesy of Zillow.com
-    </footer>
+
 </html>
