@@ -1,0 +1,1 @@
+{{ key "/dev/housing-analysis/config.ini" }}
