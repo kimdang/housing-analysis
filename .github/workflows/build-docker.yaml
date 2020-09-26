@@ -22,6 +22,6 @@ jobs:
         echo "Building release version: ${{ github.event.inputs.version }}"
         export VERSION=${{ github.event.inputs.version }}
         cd release
-        echo "${{ secrets.docker_secret }}" | docker login -u "alirom93" --password-stdin
+        echo "${{ secrets.DOCKER_SECRET }}" | docker login -u "alirom93" --password-stdin
         docker-compose build
         docker-compose push
