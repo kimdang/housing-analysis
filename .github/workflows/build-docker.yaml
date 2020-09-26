@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Person to greet'
+        description: 'Release version'
         required: true
-        default: 'Mona the Octocat'
+
 
 jobs:
   build:
