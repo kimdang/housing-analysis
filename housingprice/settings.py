@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import os
+import os, configparser
+
+
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +28,14 @@ SECRET_KEY = 'h272zy($^(5!0cql-s7p(8mv3t$d6vxwfsyz*0qxtcmj%puzye'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+config = configparser.ConfigParser()
+path_config_file = os.path.join(BASE_DIR, 'housingprice', 'myconfig.ini')
+config.read(path_config_file)
+
+
+ALLOWED_HOSTS = config.get('django', 'allow_host')
+
 
 
 # Application definition
@@ -80,10 +90,10 @@ WSGI_APPLICATION = 'housingprice.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'housing_database',
-        'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': "10.0.0.10",
+        'NAME': config.get('database', "db_name"),
+        'USER': config.get("database", "db_username"),
+        'PASSWORD': config.get("database", "db_password"),
+        'HOST': config.get("database", "db_host"),
     }
 }
 
