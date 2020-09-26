@@ -1,10 +1,11 @@
 body {
     padding-top: 40px;
     padding-bottom: 40px;
-    background-color: #eee;
+    /* background-color: #eee; */
+    background-color: red;
 }
 
-.form-control {
+/* .form-control {
     position: relative;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -12,9 +13,4 @@ body {
     height: auto;
     padding: 10px;
     font-size: 16px;
-}
-
-.peLam {
-    max-width: 300px;
-    max-height: 300px;
-}
+} */

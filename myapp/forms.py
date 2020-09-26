@@ -9,7 +9,7 @@ class InputCity(forms.Form):
     city = forms.CharField(label="City", widget=forms.TextInput(attrs={
         'class':'form-control', 
         'placeholder': 'City', 
-        'required': 'true'
+        'required': 'true', 
         }))
     state = forms.CharField(label="State", widget=forms.TextInput(attrs={
         'class':'form-control', 

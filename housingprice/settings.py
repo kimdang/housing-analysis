@@ -34,7 +34,8 @@ path_config_file = os.path.join(BASE_DIR, 'housingprice', 'myconfig.ini')
 config.read(path_config_file)
 
 
-ALLOWED_HOSTS = config.get('django', 'allow_host')
+ALLOWED_HOSTS = config.get('django', 'allow_host').split(",")
+
 
 
 
@@ -94,6 +95,7 @@ DATABASES = {
         'USER': config.get("database", "db_username"),
         'PASSWORD': config.get("database", "db_password"),
         'HOST': config.get("database", "db_host"),
+
     }
 }
 
