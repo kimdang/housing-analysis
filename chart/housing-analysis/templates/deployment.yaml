@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.name }}-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    role: {{ .Values.role }}
+
+spec:
+  selector:
+    matchLabels:
+      pod: {{ .Values.role }}
+
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      name: {{ .Values.name }}-pod
+      labels:
+        pod: {{ .Values.role }}
+
+    spec:
+      # DockerHub Secret
+      imagePullSecrets:
+        - name: {{ .Values.docker.secret }}
+
+      # Preparing environment before service containers start
+      # use shared workspace: /workdir
+      #initContainers:
+      #- name: get-config
+      #  image: busybox
+      #  command: ["/bin/sh"]
+      #  args: ["-c","echo $GIT2CONSUL_CONFIG > /workdir/config.json; cat /workdir/config.json"]
+      #  volumeMounts:
+      #  - name: workdir
+      #    mountPath: "/workdir"
+
+
+      containers:
+      - name: {{ .Values.name }}
+        image: {{ .Values.docker.img }}
+        imagePullPolicy: {{ .Values.docker.pullPolicy }}
+        stdin: true
+        tty: true
+        args: ["cat", "/root/myconfig.ini"]
+        #volumeMounts:
+        #- name: workdir
+        #  mountPath: "/workdir"
+
+      # consul agent - service discovery
+      - name: consul-agent
+        image: consul
+        imagePullPolicy: {{ .Values.docker.pullPolicy }}
+
+        # need GOSSIP_KEY to join consul cluster
+        env:
+        - name: CONSUL_SERVER_ADDR
+          value: "consul-consul-server"
+
+        #- name: "GOSSIP_KEY"
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: {{ .Values.consulAgent.gossipSecret.name }}
+        #      key:  {{ .Values.consulAgent.gossipSecret.key }}
+        - name: CONSUL_LOCAL_CONFIG
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.consulAgent.configMap.name }}
+              key:  {{ .Values.consulAgent.configMap.key }}
+
+        #args: ["agent", "-join", "consul", "-encrypt", "$(GOSSIP_KEY)"]
+        args: ["agent", "-join", "consul-consul-server", "-enable-local-script-checks"]
+
+      # Share directory between initContainers and runtimeContainers
+      volumes:
+      - name: workdir
+        emptyDir: {}
