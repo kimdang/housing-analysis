@@ -4,7 +4,7 @@ role: housing-analysis
 replicaCount: 1
 
 docker:
-  img: alirom93/projects:housing-analysis-0.1.2
+  img: alirom93/projects:housing-analysis-0.1.3
   secret: myregistrykey
   pullPolicy: Always
 
