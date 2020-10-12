@@ -11,7 +11,8 @@ RUN pip3 install \
     seaborn \
     numpy \
     scipy \
-    scikit-learn
+    scikit-learn \
+    fbprophet
 
 COPY . /root
 
