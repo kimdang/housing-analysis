@@ -48,19 +48,24 @@ def showResult(request):
      
     
 
-
+    # First plot - historical data
     image_png = computecity.plothistory(targetDF)
-
     graphic = base64.b64encode(image_png)
     graphic = graphic.decode('utf-8')
 
 
+    # Second plot - forecast data 
+    image_png2 = computecity.plotforecast(targetDF)
+    graphic2 = base64.b64encode(image_png2[0])
+    graphic2 = graphic2.decode('utf-8')
+    endprice = '$' + '{:,}'.format(image_png2[1])
+    
     # Convert into appropriat form for purpose of display
     targetDF['dt'] = targetDF['dt'].apply(lambda x: x.strftime('%B %d, %Y'))
     targetDF['price'] = targetDF['price'].apply(lambda x: '${:,}'.format(x))
 
 
-    info = {'city' : tools.capitalize_words(city), 'state' : state.upper(), 'date' : targetDF['dt'].iloc[-1], 'price': targetDF['price'].iloc[-1], 'graphic' : graphic, 'form': form
+    info = {'city' : tools.capitalize_words(city), 'state' : state.upper(), 'date' : targetDF['dt'].iloc[-1], 'price': targetDF['price'].iloc[-1], 'graphic' : graphic, 'graphic2': graphic2, 'forecast5year': endprice, 'form': form
             }
 
     return render(request, 'myapp/displayresult.html', info)
