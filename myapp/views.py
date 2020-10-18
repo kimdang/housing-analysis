@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse 
+from django.http import HttpResponse
 from django.http import Http404
 from django.template import loader
 
@@ -16,8 +16,9 @@ import computecity
 import pandas as pd
 import base64
 
-
-
+from utils.user_data import ClientInfo
+import logging
+logger = logging.getLogger('mylogger')
 
 def identifyTarget(request):
     form = InputCity()
@@ -29,10 +30,18 @@ def showResult(request):
     form = InputCity()
     city = request.GET['city']
     state = request.GET['state']
-    
+
+    requestData = ClientInfo(request).getData()
+    requestData['city'] = city
+    requestData['state'] = state
+
+    logger.info(requestData)
+
+
+
     state = translateState.state_dictionary.get(tools.capitalize_words(state), state)
-    # Database only understand state name in term of abbreviation 
-    # This handles when user enter complete state name and/or in lowercase 
+    # Database only understand state name in term of abbreviation
+    # This handles when user enter complete state name and/or in lowercase
 
     getIDquery = "SELECT * FROM myapp_indextable WHERE (regionName = '%s' and regionState = '%s')" %(city, state)
 
@@ -45,8 +54,8 @@ def showResult(request):
         targetDF = tools.getdatafromDB(regionID)
     else:
         raise Http404("This location is not listed in our database.")
-     
-    
+
+
 
     # First plot - historical data
     image_png = computecity.plothistory(targetDF)
@@ -54,12 +63,12 @@ def showResult(request):
     graphic = graphic.decode('utf-8')
 
 
-    # Second plot - forecast data 
+    # Second plot - forecast data
     image_png2 = computecity.plotforecast(targetDF)
     graphic2 = base64.b64encode(image_png2[0])
     graphic2 = graphic2.decode('utf-8')
     endprice = '$' + '{:,}'.format(image_png2[1])
-    
+
     # Convert into appropriat form for purpose of display
     targetDF['dt'] = targetDF['dt'].apply(lambda x: x.strftime('%B %d, %Y'))
     targetDF['price'] = targetDF['price'].apply(lambda x: '${:,}'.format(x))
@@ -73,7 +82,7 @@ def showResult(request):
 
 
 
-""" 
+"""
 ------------------ ARCHIVE ----------------------
 
 # from .models import Question
@@ -85,9 +94,9 @@ def showResult(request):
 #     return HttpResponse(template.render(context, request))
 
 
-#     if you do this, you don't have to import loader, see detail() below as example 
+#     if you do this, you don't have to import loader, see detail() below as example
 #     def index (request):
-#         ... 
+#         ...
 #         question_list = Question.objects.all()
 #         context = {'question_list': question_list}
 #         return render(request, 'myapp/index.html', context)

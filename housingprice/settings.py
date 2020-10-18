@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles', # Framework for managing static files
 
     # Above applications are included by default as a convenience for common sense.
-    
+
     'myapp.apps.MyappConfig', # If you follow this path, you'll see MyappConfig (Django probably created automatically)
 ]
 
@@ -131,7 +131,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False # False, so Django will not use timezone-aware datetimes. 
+USE_TZ = False # False, so Django will not use timezone-aware datetimes.
 
 
 # Static files (CSS, JavaScript, Images)
@@ -140,3 +140,26 @@ USE_TZ = False # False, so Django will not use timezone-aware datetimes.
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATIC_URL = '/static/'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '[{levelname}] {asctime}: {message}',
+            'style': '{',
+            'datefmt' : '%Y-%m-%d %H:%M:%S',
+            #'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter':'standard', # this format 'standard' is defined above
+        },
+    },
+    'root': {
+        'handlers': ['console'], # this handler 'console' is defined above
+        'level': 'INFO',
+    },
+}
