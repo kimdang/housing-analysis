@@ -13,6 +13,8 @@ class DataSet:
     1. sanitized()
     2. split()
     3. multi()
+
+    multi() uses multiprocessing to "flatten" each state's DataFrame
     '''
 
     def __init__(self, csvfile, dataname):
@@ -23,7 +25,6 @@ class DataSet:
         self.df = self.rawdf.copy()
 
         self.indexdf = pd.DataFrame({'regionid': self.df['RegionID'], 'cityname': self.df['RegionName'], 'statename': self.df['StateName']})
-        self.indexdf.set_index('regionid', inplace=True)
         # indexdf serves as reference and template for index table in SQL DB
         
         self.dataname = dataname 
@@ -47,7 +48,7 @@ class DataSet:
         # these columns need to be removed so that each row can be transposed into its own data set 
    
              
-        droprows = list(np.arange(0,49))    
+        droprows = list(np.arange(0,48))    
         if not before2000:
             self.df.drop(self.df.columns[droprows], axis=1, inplace=True)
         # Zillow raw data covers from 1996 - present, before200=False means data before year 2000 is removed 
@@ -58,6 +59,14 @@ class DataSet:
         # date column will have datetime format instead string by substituting this self.datetimelist
         # can only be executed after certain columns and rows are removed from df 
 
+        newnamelist = []
+        for name in self.indexdf['cityname']:
+            newname = name.replace("'", "")
+            newnamelist.append(newname)
+        self.indexdf['cityname'] = newnamelist
+        # some city names contain single quote that SQL query cannot be processed
+        # remove all single quotes from name 
+ 
 
 
     def __repr__(self):
@@ -106,11 +115,12 @@ class DataSet:
 
     def multi(self, howmany):        
         
+        print('This may take a while... ')
         rets = []
         # rets contain temporary returned (or transposed) DataFrame
 
-        for s in range(0, len(self.statelist), howmany):
-            composite = list(self.statelist[s:s+howmany])
+        for s in range(0, len(self.statelist), process_no):
+            composite = list(self.statelist[s:s+process_no])
             
             q = multiprocessing.Queue()
             processes = []
