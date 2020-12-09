@@ -3,7 +3,7 @@ import pymysql
 
 
 def run_query(query, fetch=False, fetch_option='fetchone'):
-    conn = pymysql.connect(host="10.0.0.10", 
+    conn = pymysql.connect(host="10.0.0.161", 
                         user="root",
                         password="123456",
                         charset="utf8mb4",
