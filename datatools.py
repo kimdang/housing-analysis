@@ -84,9 +84,13 @@ class DataSet:
     def split(self):
 
         self.dfdict = {}
+        indexdftemp = self.indexdf.copy()
+        indexdftemp.set_index('regionid', inplace=True)
+        # indexdftemp is necessary because of self.df.loc[__regionid__]
+        # cannot use self.indexdf because it cannot have regionid column as index column (for the purpose of creating index_table in SQL)
 
         for state in self.statelist:
-            tempdf = self.df.loc[self.indexdf['statename']==state]
+            tempdf = self.df.loc[indexdftemp['statename']==state]
             self.dfdict.update({state: tempdf})
         # split large df into mulitple dfs by state and place into a dictionary  
 
@@ -113,7 +117,7 @@ class DataSet:
 
 
 
-    def multi(self, howmany):        
+    def multi(self, process_no):        
         
         print('This may take a while... ')
         rets = []

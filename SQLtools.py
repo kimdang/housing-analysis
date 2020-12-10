@@ -13,7 +13,6 @@ def tostring(df, key):
         for j in range(rowcount):
             if (j != (rowcount-1)):
                 segment = "(%s, '%s', '%s'), " %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
-                print(segment)
             else:
                 segment = "(%s, '%s', '%s')" %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
             total = total + segment
