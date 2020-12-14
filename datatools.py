@@ -101,8 +101,8 @@ class DataSet:
     def transpose(self, queue, state):
 
         statedf = self.dfdict[state]
-        transposeddf = pd.DataFrame()
-        # transposeddf contain all transposed region data 
+        transposeDF = pd.DataFrame()
+        # transposeDF contain all transposed region data 
 
         for index, row in statedf.iterrows():
             tempdf = row.to_frame(name=self.dataname) # convert Series to DataFrame
@@ -111,9 +111,10 @@ class DataSet:
             tempdf.drop(columns=['index'], inplace=True)
             tempdf['date'] = self.datetimelist
             tempdf['regionid'] = regionidarray 
-            transposeddf = transposeddf.append(tempdf, ignore_index=True) # append() return a new DataFrame only 
+            tempdf.dropna(inplace=True) # drop row if contain NaN, database won't accept NaN
+            transposeDF = transposeDF.append(tempdf, ignore_index=True) # append() return a new DataFrame only 
 
-        queue.put(transposeddf)
+        queue.put(transposeDF)
 
 
 
