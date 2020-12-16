@@ -10,26 +10,26 @@ import multiprocessing
 class DataSet: 
     '''
     Class used for processing each data set. Raw data is imported from csv file, splitted into DataFrames by state (e.g. all regions in California is grouped into a DataFrame), processed and stored in a dictionary. Perform functions in this order: 
-    1. sanitized()
+    1. clean()
     2. split()
-    3. multi()
+    3. multi_process()
 
-    multi() uses multiprocessing to "flatten" each state's DataFrame
+    multi_process() uses multiprocessing to "flatten" each state's DataFrame
     '''
 
     def __init__(self, csvfile, dataname):
 
-        self.rawdf = pd.read_csv(csvfile) 
+        self.rawData = pd.read_csv(csvfile) 
         # not to be modified!
 
-        self.df = self.rawdf.copy()
+        self.preprocessData = self.rawData.copy()
 
-        self.indexdf = pd.DataFrame({'regionid': self.df['RegionID'], 'cityname': self.df['RegionName'], 'statename': self.df['StateName']})
+        self.indexdf = pd.DataFrame({'regionid': self.preprocessData['RegionID'], 'cityname': self.preprocessData['RegionName'], 'statename': self.preprocessData['StateName']})
         # indexdf serves as reference and template for index table in SQL DB
         
         self.dataname = dataname 
 
-        self.statelist = self.df['StateName'].unique()
+        self.statelist = self.preprocessData['StateName'].unique()
 
         self.splitted = False
 
@@ -37,24 +37,24 @@ class DataSet:
 
 
 
-    def sanitize (self, before2000=True):
+    def clean (self, before2000=True):
 
         dropcols = ['SizeRank', 'RegionName', 'RegionType', 'StateName', 'State', 'Metro', 'CountyName']
         try:
-            self.df.drop(columns=dropcols, inplace=True)
+            self.preprocessData.drop(columns=dropcols, inplace=True)
         except LookupError:
             print("DataFrame does not have a specific column.")
-        self.df.set_index('RegionID', inplace=True)
+        self.preprocessData.set_index('RegionID', inplace=True)
         # these columns need to be removed so that each row can be transposed into its own data set 
    
              
         droprows = list(np.arange(0,48))    
         if not before2000:
-            self.df.drop(self.df.columns[droprows], axis=1, inplace=True)
+            self.preprocessData.drop(self.preprocessData.columns[droprows], axis=1, inplace=True)
         # Zillow raw data covers from 1996 - present, before200=False means data before year 2000 is removed 
 
         
-        datestring = list(self.df.columns)
+        datestring = list(self.preprocessData.columns)
         self.datetimelist = [datetime.datetime.strptime(date, "%Y-%m-%d") for date in datestring]
         # date column will have datetime format instead string by substituting this self.datetimelist
         # can only be executed after certain columns and rows are removed from df 
@@ -73,25 +73,25 @@ class DataSet:
 
         if self.splitted:
             if self.processed:
-                return repr(self.dfprocessed)
+                return repr(self.processedData)
             else:
-                return repr(self.dfdict)
+                return repr(self.splittedData)
         else:
-            return repr(self.df)
+            return repr(self.preprocessData)
     
 
 
     def split(self):
 
-        self.dfdict = {}
+        self.splittedData = {}
         indexdftemp = self.indexdf.copy()
         indexdftemp.set_index('regionid', inplace=True)
-        # indexdftemp is necessary because of self.df.loc[__regionid__]
+        # indexdftemp is necessary because of self.preprocessData.loc[__regionid__]
         # cannot use self.indexdf because it cannot have regionid column as index column (for the purpose of creating index_table in SQL)
 
         for state in self.statelist:
-            tempdf = self.df.loc[indexdftemp['statename']==state]
-            self.dfdict.update({state: tempdf})
+            tempdf = self.preprocessData.loc[indexdftemp['statename']==state]
+            self.splittedData.update({state: tempdf})
         # split large df into mulitple dfs by state and place into a dictionary  
 
         self.splitted = True
@@ -100,7 +100,7 @@ class DataSet:
 
     def transpose(self, queue, state):
 
-        statedf = self.dfdict[state]
+        statedf = self.splittedData[state]
         transposeDF = pd.DataFrame()
         # transposeDF contain all transposed region data 
 
@@ -118,9 +118,8 @@ class DataSet:
 
 
 
-    def multi(self, process_no):        
+    def multi_process(self, process_no):        
         
-        print('This may take a while... ')
         rets = []
         # rets contain temporary returned (or transposed) DataFrame
 
@@ -142,7 +141,7 @@ class DataSet:
             for p in processes:
                 p.join()
 
-        self.dfprocessed = dict(zip(self.statelist, rets))
+        self.processedData = dict(zip(self.statelist, rets))
 
         self.processed = True
 

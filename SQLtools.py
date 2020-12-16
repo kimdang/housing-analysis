@@ -4,6 +4,10 @@ import pandas as pd
 
 
 def dftostring(df, key):
+    '''
+    dftostring() iterates rows of DataFrame and append them onto a string variable
+    key argument indicates the purpose of the string variable (e.g. 'index' means the string is used to create index table)
+    '''
 
     colname = df.columns.values
     rowcount = df[colname[0]].count()
@@ -12,24 +16,24 @@ def dftostring(df, key):
         total = ""
         for j in range(rowcount):
             if (j != (rowcount-1)):
-                segment = "(%s, '%s', '%s'), " %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
+                text = "(%s, '%s', '%s'), " %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
             else:
-                segment = "(%s, '%s', '%s')" %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
-            total = total + segment
+                text = "(%s, '%s', '%s')" %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
+            totaltext = totaltext + text
     # df has 3 columns: regionID, cityname, statename 
     # df goes into database to serve as index table 
 
     if key == "state":
-        total = ""
+        totaltext = ""
         for j in range(rowcount):
             if (j != (rowcount-1)):
-                segment = "(%s, '%s', %s), " %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
+                text = "(%s, '%s', %s), " %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
             else:
-                segment = "(%s, '%s', %s)" %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
-            total = total + segment
+                text = "(%s, '%s', %s)" %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
+            totaltext = totaltext + text
     # df has 3 columns: price, date, regionid
 
-    return total
+    return totaltext
 
 
 
