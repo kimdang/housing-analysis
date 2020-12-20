@@ -13,7 +13,7 @@ def dftostring(df, key):
     rowcount = df[colname[0]].count()
 
     if key == "index":
-        total = ""
+        totaltext = ""
         for j in range(rowcount):
             if (j != (rowcount-1)):
                 text = "(%s, '%s', '%s'), " %(df[colname[0]][j], df[colname[1]][j], df[colname[2]][j])
