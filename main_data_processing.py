@@ -22,18 +22,20 @@ def load_obj(name):
 
 
 
-print("Have you created index tables? (yes/no)")
+print("Do you want to import the index tables? (yes/no)")
 createIndexTable = input()
 
 if createIndexTable == "yes":
-    toptier = DataSet('TopTierByCity.csv', 'toptier') # use midtier's index DataFrame to create SQL index_table
-    toptier.clean(before2000=False)
-    text = SQLtools.dftostring(toptier.indexdf, key='index')
-    createQuery = "CREATE TABLE IF NOT EXISTS toptier_index (regionid INT PRIMARY KEY, cityname VARCHAR(255), statename VARCHAR(255))"
-    execute.run_query(createQuery)
-    insertQuery = "INSERT INTO toptier_index (regionid, cityname, statename) VALUES %s" %(text)
-    execute.run_query(insertQuery)
-    print('Tables are created in MySQL database.')
+    for filename, name in zip(csvfile, csvname):
+        temp = DataSet(filename, name) 
+        temp.clean(before2000=False)
+        text = SQLtools.dftostring(temp.indexdf, key='index')
+        createQuery = "CREATE TABLE IF NOT EXISTS %s_index (regionid INT PRIMARY KEY, cityname VARCHAR(255), statename VARCHAR(255))" %(name)
+        execute.run_query(createQuery)
+        insertQuery = "INSERT INTO %s_index (regionid, cityname, statename) VALUES %s" %(name, text)
+        execute.run_query(insertQuery)
+    print("All index tables have been created in MySQL database. Please go to database and execute UNION query.")
+
 
 
 
@@ -53,7 +55,7 @@ if processRawData == 'yes':
 
 
 
-print("Do you want to send data to SQL database? (yes/no)")
+print("Do you want to send all data to SQL database? (yes/no)")
 sendToDatabase = input()
 
 if sendToDatabase == 'yes':    
@@ -61,7 +63,7 @@ if sendToDatabase == 'yes':
         nameOfDict = item + "output"
         tempDict = load_obj(nameOfDict)
         for state in tempDict:
-            createTableQuery = "CREATE TABLE IF NOT EXISTS %s_%s (price INT, date DATETIME NOT NULL, regionid INT, FOREIGN KEY (regionid) REFERENCES index_table(regionid))" %(state, item)
+            createTableQuery = "CREATE TABLE IF NOT EXISTS %s_%s (price INT, date DATETIME NOT NULL, regionid INT, FOREIGN KEY (regionid) REFERENCES main_index(regionid))" %(state, item)
             execute.run_query(createTableQuery)
             stateText = SQLtools.dftostring(tempDict[state], key='state')
             insertQuery = "INSERT INTO %s_%s (price, date, regionid) VALUES %s" %(state, item, stateText)
