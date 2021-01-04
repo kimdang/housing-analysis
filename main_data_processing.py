@@ -2,12 +2,14 @@ from datatools import DataSet
 import SQLtools
 import execute
 import pickle
+import multiprocessing
 
 
 
 ######## FILL OUT THE 2 LISTS BELOW, MAKE SURE ITEMS ARE IN CORRECT ORDER! ########
 csvfile = ['TopTierByCity.csv', 'MidTierByCity.csv', 'BottomTierByCity.csv', 'OneBedByCity.csv', 'TwoBedByCity.csv', 'ThreeBedByCity.csv', 'FourBedByCity.csv', 'FiveBedByCity.csv']
 csvname = ['toptier', 'midtier', 'bottomtier', 'onebed', 'twobed', 'threebed', 'fourbed', 'fivebed']
+########
 
 
 
@@ -16,9 +18,26 @@ def save_obj(obj, name):
     pickle.dump(obj, filename)
     
 
+
 def load_obj(name):
     filename = open(name, "rb")
     return(pickle.load(filename))
+
+
+
+def insertStateToDB(state, tier, tierDict):
+    # used for multi-processing 
+    # this function will insert state's data in form dictionary into database (e.g. NY_toptier, CA_onebed, IL_bottomtier)
+    createTableQuery = "CREATE TABLE IF NOT EXISTS %s_%s (price INT, date DATETIME NOT NULL, regionid INT, FOREIGN KEY (regionid) REFERENCES main_index(regionid))" %(state, tier)
+    execute.run_query(createTableQuery)
+    stateText = SQLtools.dftostring(tierDict[state], key='state')
+    insertQuery = "INSERT INTO %s_%s (price, date, regionid) VALUES %s" %(state, tier, stateText)
+    execute.run_query(insertQuery)
+    print("%s_%s is now in MySQL database." %(state, tier))
+
+
+
+######## SCRIPTS TO EXECUTE BEGIN HERE ######## 
 
 
 
@@ -34,8 +53,31 @@ if createIndexTable == "yes":
         execute.run_query(createQuery)
         insertQuery = "INSERT INTO %s_index (regionid, cityname, statename) VALUES %s" %(name, text)
         execute.run_query(insertQuery)
-    print("All index tables have been created in MySQL database. Please go to database and execute UNION query.")
+    print("All index tables have been created in MySQL database. Please go to database and execute appropriate queries. FYI, these queuries can be found in main_data_processing.py")
 
+
+
+# # You must execute 2 queries. First is UNION query to combine all index tables to create table main_index: 
+# CREATE TABLE main_index AS 
+# SELECT * FROM toptier_index 
+# UNION 
+# SELECT * FROM midtier_index
+# UNION 
+# SELECT * FROM bottomtier_index
+# UNION 
+# SELECT * FROM onebed_index 
+# UNION 
+# SELECT * FROM twobed_index 
+# UNION 
+# SELECT * FROM threebed_index 
+# UNION 
+# SELECT * FROM fourbed_index
+# UNION 
+# SELECT * FROM fivebed_index
+# ORDER BY regionid; 
+# # Second is ALTER query to mark the primary key in newly createtable table main_index:
+# ALTER TABLE main_index
+# ADD PRIMARY KEY (regionid);
 
 
 
@@ -55,20 +97,31 @@ if processRawData == 'yes':
 
 
 
-print("Do you want to send all data to SQL database? (yes/no)")
+print("Do you want to send data to SQL database? (yes/no)")
 sendToDatabase = input()
 
 if sendToDatabase == 'yes':    
-    for item in csvname:
-        nameOfDict = item + "output"
-        tempDict = load_obj(nameOfDict)
-        for state in tempDict:
-            createTableQuery = "CREATE TABLE IF NOT EXISTS %s_%s (price INT, date DATETIME NOT NULL, regionid INT, FOREIGN KEY (regionid) REFERENCES main_index(regionid))" %(state, item)
-            execute.run_query(createTableQuery)
-            stateText = SQLtools.dftostring(tempDict[state], key='state')
-            insertQuery = "INSERT INTO %s_%s (price, date, regionid) VALUES %s" %(state, item, stateText)
-            print(insertQuery)
-            execute.run_query(insertQuery)
-            print("%s_%s is now in MySQL database." %(state, item))
+    print("Each data set must be imported individually. \nSelect from the following: toptier, bottomtier, midtier, onebed, twobed, threebed, fourbed, or fivebed")
+    tier = input()
+    
+    while tier != 'done':    
+        try: 
+            tempDict = load_obj("%soutput" %(tier))
+            statelist = list(tempDict.keys())
+
+            for x in range(0, len(statelist), 5):
+                composite = statelist[x:x+5]
+                print('Working on: ' + ' '.join(composite))
+        
+                for state in composite:
+                    process = multiprocessing.Process(target=insertStateToDB, args=[state, tier, tempDict])
+                    process.start()
+                process.join()
+        except LookupError:
+            print("Your input is invalid!")
+        
+        print("What other data set do you want to import? (toptier, bottomtier, midtier, onebed, twobed, threebed, fourbed, fivebed) \nIf done, please enter done.")
+        tier = input()
+
 
 
