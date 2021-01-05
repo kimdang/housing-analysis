@@ -9,7 +9,6 @@ import multiprocessing
 ######## FILL OUT THE 2 LISTS BELOW, MAKE SURE ITEMS ARE IN CORRECT ORDER! ########
 csvfile = ['TopTierByCity.csv', 'MidTierByCity.csv', 'BottomTierByCity.csv', 'OneBedByCity.csv', 'TwoBedByCity.csv', 'ThreeBedByCity.csv', 'FourBedByCity.csv', 'FiveBedByCity.csv']
 csvname = ['toptier', 'midtier', 'bottomtier', 'onebed', 'twobed', 'threebed', 'fourbed', 'fivebed']
-########
 
 
 
@@ -37,13 +36,14 @@ def insertStateToDB(state, tier, tierDict):
 
 
 
-######## SCRIPTS TO EXECUTE BEGIN HERE ######## 
+######################## SCRIPTS TO EXECUTE BEGIN HERE ######################## 
 
 
 
 print("Do you want to import the index tables? (yes/no)")
 createIndexTable = input()
 
+# This script creates 8 index tables, which are subsequently combined to create 1 main index table via UNION query. See below.
 if createIndexTable == "yes":
     for filename, name in zip(csvfile, csvname):
         temp = DataSet(filename, name) 
@@ -54,6 +54,8 @@ if createIndexTable == "yes":
         insertQuery = "INSERT INTO %s_index (regionid, cityname, statename) VALUES %s" %(name, text)
         execute.run_query(insertQuery)
     print("All index tables have been created in MySQL database. Please go to database and execute appropriate queries. FYI, these queuries can be found in main_data_processing.py")
+
+
 
 
 
@@ -81,11 +83,13 @@ if createIndexTable == "yes":
 
 
 
+
+
 print("Do you want to process raw data? (yes/no)")
 processRawData = input()
 
+# This script saves the each data set, which is to be recalled later. It is done this way to save times because each data set is expected to be loaded multiple times during development. Only need to be executed once!  
 if processRawData == 'yes':
-# This script only needs to be executed once.
     for filename, name in zip(csvfile, csvname):
         print("working on " + name + "...")
         tempobj = DataSet(filename, name)
@@ -97,9 +101,12 @@ if processRawData == 'yes':
 
 
 
+
+
 print("Do you want to send data to SQL database? (yes/no)")
 sendToDatabase = input()
 
+# This script handle data import. Multi-processing is used and 5 processes are started at once. 
 if sendToDatabase == 'yes':    
     print("Each data set must be imported individually. \nSelect from the following: toptier, bottomtier, midtier, onebed, twobed, threebed, fourbed, or fivebed")
     tier = input()
@@ -116,7 +123,8 @@ if sendToDatabase == 'yes':
                 for state in composite:
                     process = multiprocessing.Process(target=insertStateToDB, args=[state, tier, tempDict])
                     process.start()
-                process.join()
+                process.join() # It is important that this code is located outside the FOR loop! The FOR loop continues on the iteration without delay or waiting for the processes to finish. 
+                # process.join() puts a stop or delay which will enable the 5 processes to finish before the FOR loop continues on 
         except LookupError:
             print("Your input is invalid!")
         
