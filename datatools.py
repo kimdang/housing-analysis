@@ -9,7 +9,7 @@ import multiprocessing
 
 class DataSet: 
     '''
-    Class used for processing each data set. Raw data is imported from csv file, splitted into DataFrames by state (e.g. all regions in California is grouped into a DataFrame), processed and stored in a dictionary. Perform functions in this order: 
+    Class used for processing each data set. Raw data is imported from csv file, splitted into DataFrames by state (e.g. all regions in California is grouped into a DataFrame), processed and stored in a dictionary. Execute in this order: 
     1. clean()
     2. split()
     3. multi_process()
@@ -38,6 +38,13 @@ class DataSet:
 
 
     def clean (self, before2000=True):
+        '''
+        Perform necessary data manipulation to obtain a "clean" DataFrame:
+        1. drop irrelevant columns 
+        2. drop data before year 2000 if desired 
+        3. obtain a list of dates in datetime format to convert DataFrame from str to datetime
+        4. remove single quote from city name  
+        '''
 
         dropcols = ['SizeRank', 'RegionName', 'RegionType', 'StateName', 'State', 'Metro', 'CountyName']
         try:
@@ -90,6 +97,9 @@ class DataSet:
         # cannot use self.indexdf because it cannot have regionid column as index column (for the purpose of creating index_table in SQL)
 
         for state in self.statelist:
+            # indices_of_state = self.preprocessData.index[indexdftemp['statename']==state].tolist()
+            # print("RegionID in " + state + " : " )
+            # print(indices_of_state) # for debugging purpose only; please comment out when otherwise
             tempdf = self.preprocessData.loc[indexdftemp['statename']==state]
             self.splittedData.update({state: tempdf})
         # split large df into mulitple dfs by state and place into a dictionary  
@@ -98,11 +108,14 @@ class DataSet:
 
 
 
-    def transpose(self, queue, state):
+    def transpose(self, queue, queueState, state):
+        '''
+        To be called by multi_processing()
+        '''
 
         statedf = self.splittedData[state]
         transposeDF = pd.DataFrame()
-        # transposeDF contain all transposed region data 
+        # transposeDF will contain all transposed region data 
 
         for index, row in statedf.iterrows():
             tempdf = row.to_frame(name=self.dataname) # convert Series to DataFrame
@@ -115,33 +128,42 @@ class DataSet:
             transposeDF = transposeDF.append(tempdf, ignore_index=True) # append() return a new DataFrame only 
 
         queue.put(transposeDF)
+        queueState.put(state)
+        print(state + " is done.")
 
 
 
     def multi_process(self, process_no):        
         
         rets = []
-        # rets contain temporary returned (or transposed) DataFrame
+        # rets contain ALL temporary returned (or transposed) DataFrame
+        staterets = []
+        # staterets contain the order of returned DataFrame
 
         for s in range(0, len(self.statelist), process_no):
             composite = list(self.statelist[s:s+process_no])
+            print(' '.join(composite) + " are processed at the same time.")
             
             q = multiprocessing.Queue()
+            qstate = multiprocessing.Queue()
             processes = []
 
             for state in composite:
-                p = multiprocessing.Process(target=self.transpose, args=(q, state))
+                p = multiprocessing.Process(target=self.transpose, args=(q, qstate, state))
                 processes.append(p)
                 p.start()
+                print("Working on " + state)
 
             for p in processes:
                 ret = q.get()
                 rets.append(ret)
+                stateret = qstate.get()
+                staterets.append(stateret)
 
             for p in processes:
                 p.join()
 
-        self.processedData = dict(zip(self.statelist, rets))
+        self.processedData = dict(zip(staterets, rets))
 
         self.processed = True
 

@@ -1,5 +1,6 @@
 
 import pandas as pd
+import execute
 
 
 
@@ -35,6 +36,15 @@ def dftostring(df, key):
 
     return totaltext
 
+
+
+
+def getDataFromDB(regionid, state):
+    getdataquery = "SELECT * FROM %s_toptier WHERE regionid = %s" %(state, regionid)
+    target = execute.run_query(getdataquery, fetch=True, fetch_option='fetchall')
+    targetDF = pd.DataFrame(target)
+    print(getdataquery)
+    return targetDF
 
 
 

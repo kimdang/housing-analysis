@@ -11,6 +11,7 @@ from myapp.forms import InputCity
 
 import execute
 import tools
+import SQLtools
 import translateState
 import computecity
 import pandas as pd
@@ -21,12 +22,15 @@ import logging
 logger = logging.getLogger('mylogger')
 
 def identifyTarget(request):
+    # index page receives city and state information from user
     form = InputCity()
     return render(request, 'myapp/index.html', {'form': form})
 
 
 
 def showResult(request):
+
+    # additional form to receive city and state information from user
     form = InputCity()
     city = request.GET['city']
     state = request.GET['state']
@@ -43,17 +47,26 @@ def showResult(request):
     # Database only understand state name in term of abbreviation
     # This handles when user enter complete state name and/or in lowercase
 
-    getIDquery = "SELECT * FROM myapp_indextable WHERE (regionName = '%s' and regionState = '%s')" %(city, state)
+    getIDquery = "SELECT * FROM main_index WHERE (cityname = '%s' and statename = '%s')" %(city, state)
+    # build query to obtain regionid from main_index table
 
-    try:
-        regionID = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionID']
-    except TypeError:
-        raise Http404("Invalid Entry. Please check that your information is correct.")
 
-    if regionID:
-        targetDF = tools.getdatafromDB(regionID)
-    else:
-        raise Http404("This location is not listed in our database.")
+    print("DEBUG BEGIN HERE!!!")
+    regionid = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionid']
+
+    SQLtools.getDataFromDB(regionid, state)
+
+
+    # try:
+    #     regionID = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionid']
+    #     print("The regionid of interest is: " + regionID)
+    # except TypeError:
+    #     raise Http404("Invalid Entry. Please check that your information is correct.")
+
+    # if regionID:
+    #     targetDF = tools.getdatafromDB(regionID)
+    # else:
+    #     raise Http404("This location is not listed in our database.")
 
 
 
