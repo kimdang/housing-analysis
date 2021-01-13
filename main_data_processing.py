@@ -6,7 +6,7 @@ import multiprocessing
 
 
 
-######## FILL OUT THE 2 LISTS BELOW, MAKE SURE ITEMS ARE IN CORRECT ORDER! ########
+####### FILL OUT THE 2 LISTS BELOW, MAKE SURE ITEMS ARE IN CORRECT ORDER! ########
 csvfile = ['TopTierByCity.csv', 'MidTierByCity.csv', 'BottomTierByCity.csv', 'OneBedByCity.csv', 'TwoBedByCity.csv', 'ThreeBedByCity.csv', 'FourBedByCity.csv', 'FiveBedByCity.csv']
 csvname = ['toptier', 'midtier', 'bottomtier', 'onebed', 'twobed', 'threebed', 'fourbed', 'fivebed']
 
@@ -103,30 +103,30 @@ if processRawData == 'yes':
 
 
 
-# print("Do you want to send data to SQL database? (yes/no)")
-# sendToDatabase = input()
+print("Do you want to send data to SQL database? (yes/no)")
+sendToDatabase = input()
 
-# # This script handle data import. Multi-processing is used and 5 processes are started at once. 
-# if sendToDatabase == 'yes':    
-#     print("Each data set must be imported individually. \nSelect from the following: toptier, bottomtier, midtier, onebed, twobed, threebed, fourbed, or fivebed")
-#     tier = input()
+# This script handle data import. Multi-processing is used and 5 processes are started at once. 
+if sendToDatabase == 'yes':    
+    print("Each data set must be imported individually. \nSelect from the following: toptier, bottomtier, midtier, onebed, twobed, threebed, fourbed, or fivebed")
+    tier = input()
     
-#     while tier != 'done':    
-#         try: 
-#             tempDict = load_obj("%soutput" %(tier))
-#             statelist = list(tempDict.keys())
+    while tier != 'done':    
+        try: 
+            tempDict = load_obj("%soutput" %(tier))
+            statelist = list(tempDict.keys())
 
-#             for x in range(0, len(statelist), 5):
-#                 composite = statelist[x:x+5]
-#                 print('Working on: ' + ' '.join(composite))
+            for x in range(0, len(statelist), 5):
+                composite = statelist[x:x+5]
+                print('Working on: ' + ' '.join(composite))
         
-#                 for state in composite:
-#                     process = multiprocessing.Process(target=insertStateToDB, args=[state, tier, tempDict])
-#                     process.start()
-#                 process.join() # It is important that this code is located outside the FOR loop! The FOR loop continues on the iteration without delay or waiting for the processes to finish. 
-#                 # process.join() puts a stop or delay which will enable the 5 processes to finish before the FOR loop continues on 
-#         except LookupError:
-#             print("Your input is invalid!")
+                for state in composite:
+                    process = multiprocessing.Process(target=insertStateToDB, args=[state, tier, tempDict])
+                    process.start()
+                process.join() # It is important that this code is located outside the FOR loop! The FOR loop continues on the iteration without delay or waiting for the processes to finish. 
+                # process.join() puts a stop or delay which will enable the 5 processes to finish before the FOR loop continues on 
+        except LookupError:
+            print("Your input is invalid!")
         
-#         print("What other data set do you want to import? (toptier, bottomtier, midtier, onebed, twobed, threebed, fourbed, fivebed) \nIf done, please enter done.")
-#         tier = input()
+        print("What other data set do you want to import? (toptier, bottomtier, midtier, onebed, twobed, threebed, fourbed, fivebed) \nIf done, please enter done.")
+        tier = input()

@@ -40,7 +40,7 @@ class suppress_stdout_stderr(object):
 def plothistory(targetDF):
     fig = plt.figure(figsize=(8,4))
     ax = fig.add_subplot(111)
-    line = plt.plot('dt', 'price', data=targetDF)
+    line = plt.plot('date', 'price', data=targetDF)
     plt.title("Average Home Value")
     plt.grid(b=True, color='k', linestyle='dotted', linewidth='0.5')
     ax.set_yticks(ax.get_yticks().tolist()) # REMOVE IN THE FUTURE - PLACED TO AVOID WARNING - IT IS A BUG FROM MATPLOTLIB 3.3.1

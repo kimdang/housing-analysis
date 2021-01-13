@@ -40,11 +40,17 @@ def dftostring(df, key):
 
 
 def getDataFromDB(regionid, state):
-    getdataquery = "SELECT * FROM %s_toptier WHERE regionid = %s" %(state, regionid)
-    target = execute.run_query(getdataquery, fetch=True, fetch_option='fetchall')
-    targetDF = pd.DataFrame(target)
-    print(getdataquery)
-    return targetDF
+    citydata = {}
+    tiers = ['toptier', 'bottomtier', 'midtier', 'onebed', 'twobed', 'threebed', 'fourbed', 'fivebed']
+    for tier in tiers:
+        try:
+            query = "SELECT * FROM %s_%s WHERE regionid = %s" %(state, tier, regionid)
+            target = execute.run_query(query, fetch=True, fetch_option='fetchall')
+            targetDF = pd.DataFrame(target)
+            citydata.update({tier : targetDF})
+        except:
+            pass
+    return citydata
 
 
 

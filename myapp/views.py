@@ -44,17 +44,14 @@ def showResult(request):
 
 
     state = translateState.state_dictionary.get(tools.capitalize_words(state), state)
-    # Database only understand state name in term of abbreviation
-    # This handles when user enter complete state name and/or in lowercase
+    # state names are abbreviated in MySQL database
+
 
     getIDquery = "SELECT * FROM main_index WHERE (cityname = '%s' and statename = '%s')" %(city, state)
-    # build query to obtain regionid from main_index table
-
-
-    print("DEBUG BEGIN HERE!!!")
     regionid = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionid']
+    # get regionid from main_index table
 
-    SQLtools.getDataFromDB(regionid, state)
+    citydata = SQLtools.getDataFromDB(regionid, state)
 
 
     # try:
@@ -71,24 +68,29 @@ def showResult(request):
 
 
     # First plot - historical data
-    image_png = computecity.plothistory(targetDF)
+    image_png = computecity.plothistory(citydata['toptier'])
     graphic = base64.b64encode(image_png)
     graphic = graphic.decode('utf-8')
 
 
     # Second plot - forecast data
-    image_png2 = computecity.plotforecast(targetDF)
-    graphic2 = base64.b64encode(image_png2[0])
+    image_png2 = computecity.plothistory(citydata['bottomtier'])
+    graphic2 = base64.b64encode(image_png2)
     graphic2 = graphic2.decode('utf-8')
-    endprice = '$' + '{:,}'.format(image_png2[1])
+    # endprice = '$' + '{:,}'.format(image_png2[1])
 
-    # Convert into appropriat form for purpose of display
-    targetDF['dt'] = targetDF['dt'].apply(lambda x: x.strftime('%B %d, %Y'))
-    targetDF['price'] = targetDF['price'].apply(lambda x: '${:,}'.format(x))
+    # # Convert into appropriat form for purpose of display
+    # targetDF['date'] = targetDF['date'].apply(lambda x: x.strftime('%B %d, %Y'))
+    # targetDF['price'] = targetDF['price'].apply(lambda x: '${:,}'.format(x))
 
-
-    info = {'city' : tools.capitalize_words(city), 'state' : state.upper(), 'date' : targetDF['dt'].iloc[-1], 'price': targetDF['price'].iloc[-1], 'graphic' : graphic, 'graphic2': graphic2, 'forecast5year': endprice, 'form': form
+    info = {'city' : tools.capitalize_words(city), 
+            'state' : state.upper(), 
+            'graphic' : graphic, 
+            'graphic2' : graphic2
             }
+
+    # info = {'city' : tools.capitalize_words(city), 'state' : state.upper(), 'date' : targetDF['date'].iloc[-1], 'price': targetDF['price'].iloc[-1], 'graphic' : graphic, 'graphic2': graphic2, 'forecast5year': endprice, 'form': form
+    #         }
 
     return render(request, 'myapp/displayresult.html', info)
 
