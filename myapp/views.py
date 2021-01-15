@@ -4,11 +4,12 @@ from django.http import Http404
 from django.template import loader
 
 
-
-from myapp.models import indexTable
+# import form
 from myapp.forms import InputCity
 
 
+
+# other Python modules 
 import execute
 import tools
 import SQLtools
@@ -17,9 +18,14 @@ import computecity
 import pandas as pd
 import base64
 
-from utils.user_data import ClientInfo
+
+
+# log user input 
+from utils.user_data import ClientInfo # get user's IP address, etc.
 import logging
 logger = logging.getLogger('mylogger')
+
+
 
 def identifyTarget(request):
     # index page receives city and state information from user
@@ -30,54 +36,53 @@ def identifyTarget(request):
 
 def showResult(request):
 
-    # additional form to receive city and state information from user
+
     form = InputCity()
     city = request.GET['city']
     state = request.GET['state']
+    # additional form to receive city and state information from user
 
-    requestData = ClientInfo(request).getData()
+
+    requestData = ClientInfo(request).getData() # get user's IP address, etc.
     requestData['city'] = city
     requestData['state'] = state
-
     logger.info(requestData)
-
 
 
     state = translateState.state_dictionary.get(tools.capitalize_words(state), state)
     # state names are abbreviated in MySQL database
 
 
-    getIDquery = "SELECT * FROM main_index WHERE (cityname = '%s' and statename = '%s')" %(city, state)
-    regionid = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionid']
-    # get regionid from main_index table
+    try:
+        getIDquery = "SELECT * FROM main_index WHERE (cityname = '%s' and statename = '%s')" %(city, state)
+        regionid = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionid']
+        # get regionid from main_index table
+    except TypeError:
+        raise Http404("Invalid Entry. Please check that your information is correct.")
 
-    citydata = SQLtools.getDataFromDB(regionid, state)
-
-
-    # try:
-    #     regionID = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionid']
-    #     print("The regionid of interest is: " + regionID)
-    # except TypeError:
-    #     raise Http404("Invalid Entry. Please check that your information is correct.")
-
-    # if regionID:
-    #     targetDF = tools.getdatafromDB(regionID)
-    # else:
-    #     raise Http404("This location is not listed in our database.")
+    if regionid: 
+        citydata = SQLtools.getDataFromDB(regionid, state)    
+    else:
+        raise Http404("This location is not listed in database.")
+    
+    print(regionid)
 
 
-
-    # First plot - historical data
-    image_png = computecity.plothistory(citydata['toptier'])
+    # historical data - midtier
+    image_png = computecity.plothistory(citydata['midtier'])
     graphic = base64.b64encode(image_png)
     graphic = graphic.decode('utf-8')
 
-
-    # Second plot - forecast data
-    image_png2 = computecity.plothistory(citydata['bottomtier'])
-    graphic2 = base64.b64encode(image_png2)
-    graphic2 = graphic2.decode('utf-8')
     # endprice = '$' + '{:,}'.format(image_png2[1])
+
+    citysummary = {}
+    for tier in citydata:
+        temp = citydata[tier]
+        endprice = temp['price'].iloc[-1] # 'price' column, last row
+        citysummary.update({tier : endprice})
+    print(citysummary)
+
+
 
     # # Convert into appropriat form for purpose of display
     # targetDF['date'] = targetDF['date'].apply(lambda x: x.strftime('%B %d, %Y'))
@@ -86,7 +91,7 @@ def showResult(request):
     info = {'city' : tools.capitalize_words(city), 
             'state' : state.upper(), 
             'graphic' : graphic, 
-            'graphic2' : graphic2
+            'form' : form
             }
 
     # info = {'city' : tools.capitalize_words(city), 'state' : state.upper(), 'date' : targetDF['date'].iloc[-1], 'price': targetDF['price'].iloc[-1], 'graphic' : graphic, 'graphic2': graphic2, 'forecast5year': endprice, 'form': form

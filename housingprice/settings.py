@@ -148,7 +148,8 @@ LOGGING = {
         'standard': {
             'format': '[{levelname}] {asctime}: {message}',
             'style': '{',
-            'datefmt' : '%Y-%m-%d %H:%M:%S',
+            # 'datefmt' : '%Y-%m-%d %H:%M:%S',
+            'datefmt' : '%Y-%m-%d',
             #'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
         },
     },
