@@ -65,23 +65,28 @@ def showResult(request):
     else:
         raise Http404("This location is not listed in database.")
     
-    print(regionid)
 
 
-    # historical data - midtier
+    # GRAPH historical data - midtier
     image_png = computecity.plothistory(citydata['midtier'])
     graphic = base64.b64encode(image_png)
     graphic = graphic.decode('utf-8')
 
-    # endprice = '$' + '{:,}'.format(image_png2[1])
 
+    # OBTAIN average value of each tier 
     citysummary = {}
     for tier in citydata:
         temp = citydata[tier]
-        endprice = temp['price'].iloc[-1] # 'price' column, last row
-        citysummary.update({tier : endprice})
-    print(citysummary)
+        try:
+            endprice = '$' + '{:,}'.format(temp['price'].iloc[-1]) # 'price' column, last row, add dollar sign
+            citysummary.update({tier : endprice})
+        except:
+            endprice = 'N/A'
+            citysummary.update({tier : endprice})
 
+
+    # CALCULATE rise percentage
+    percentperyear = computecity.calcpercent(citydata['midtier'])
 
 
     # # Convert into appropriat form for purpose of display
@@ -91,11 +96,11 @@ def showResult(request):
     info = {'city' : tools.capitalize_words(city), 
             'state' : state.upper(), 
             'graphic' : graphic, 
-            'form' : form
+            'form' : form, 
+            'citysummary': citysummary,
+            'percentperyear' : percentperyear,
             }
 
-    # info = {'city' : tools.capitalize_words(city), 'state' : state.upper(), 'date' : targetDF['date'].iloc[-1], 'price': targetDF['price'].iloc[-1], 'graphic' : graphic, 'graphic2': graphic2, 'forecast5year': endprice, 'form': form
-    #         }
 
     return render(request, 'myapp/displayresult.html', info)
 

@@ -1,0 +1,36 @@
+body {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background-color: #eee;
+}
+
+.lam-test {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    min-width: 100%;
+    margin: auto;
+    width: auto;
+}
+
+.bigger-container {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.ngan-test {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1em;
+    margin: auto;
+    width: auto;
+}
+
+.jumbotron {
+    background-color: #eee;
+    margin: auto;
+}
+

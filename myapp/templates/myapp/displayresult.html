@@ -1,4 +1,4 @@
-{% load static %}
+{% load static  %}
 
 <!DOCTYPE html>
 
@@ -6,76 +6,91 @@
         <meta charset="utf-8">
         <title>{{city}}, {{state}}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-        <link rel="stylesheet" href="{% static 'my_app/displayresult.css' %}">
+        <link rel="stylesheet" href="{% static 'myapp/displayresult.css' %}">
     </head>
 
     <body>
+
+
+      <div class="bigger-container">
+
+
+
+        <div class="lam-test">
+
+
+          <!-- the form -->
+          <div class="jumbotron">
+              <form action=showResult method="GET">
+                  <div>
+                      {{form.city}}
+                  </div>
+                  <div>
+                      {{form.state}}
+                  </div>
+                  {% csrf_token %}
+      
+                  <input class="btn btn-lg btn-primary btn-block" type="Submit" value="Search">
+      
+              </form>
+          </div>
+  
+  
+  
+          <!-- the information and image -->
+          <div class="ngan-test">
+              <p>The average value of a home (including condo and single-family home) in {{city}}, {{state}} is <b>{{citysummary.midtier}}</b>.</p>
+
+              <div class="img-fluid">
+                  <img src="data:image/png;base64,{{graphic|safe}}">
+              </div>
+              <br>
+              <p>On average, home value in {{city}} is increased by <b>{{percentperyear}}%</b> annually according to historical data. </p>
+          </div>
+
+
+        </div>
+
         <div class="container">
+          <table style="width: auto; margin: auto" class="table">
+              <thead>
+                <tr>
+                  <th scope="col"># of bedrooms</th>
+                  <th scope="col"> current estimated value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">one</th>
+                  <td>{{citysummary.onebed}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">two</th>
+                  <td>{{citysummary.twobed}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">three</th>
+                  <td>{{citysummary.threebed}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">four</th>
+                  <td>{{citysummary.fourbed}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">five</th>
+                  <td>{{citysummary.fivebed}}</td>
+                </tr>
 
-            <div class="jumbotron">
-                <form action=showResult method="GET">
-                    <div>
-                        {{form.city}}
-                    </div>
-                    <div>
-                        {{form.state}}
-                    </div>
-                    {% csrf_token %}
-        
-                    <input class="btn btn-lg btn-primary btn-block" type="Submit" value="Search">
-        
-                </form>
-            </div>
-    
-    
-    
-    
-            <div class="container-fluid">
-                <p class="container">The average price of single-family house is {{price}} in {{date}}.</p>
-
-                <div class=img-fluid>
-                    <img src="data:image/png;base64,{{graphic|safe}}">
-                </div>
-
-
-            </div>
-
-
-
+              </tbody>
+            </table>
         </div>
 
-        <div class="container-fluid">
-            <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">3</th>
-                    <td>Larry</td>
-                    <td>the Bird</td>
-                    <td>@twitter</td>
-                  </tr>
-                </tbody>
-              </table>
-        </div>
+
+      </div>
+      
+
+
+
 
 
     </body>

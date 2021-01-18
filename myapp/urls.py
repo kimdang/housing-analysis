@@ -12,6 +12,8 @@ urlpatterns = [
     # the argument name is called by {% url %} template tag in index.html 
 ]
 
+
+
 """
 The path() function pass 4 arguments: route, view, kwargs and name
 route - string that contains URL pattern 

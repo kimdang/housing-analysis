@@ -55,6 +55,13 @@ def plothistory(targetDF):
     return image_png
 
 
+def calcpercent(targetDF):
+    firstdateprice = targetDF['price'][0]
+    lastdate = '2020-01-31'
+    lastdateprice = targetDF.loc[targetDF['date']==lastdate]['price'].values[0] # obtain price at lastdate
+    percent = (lastdateprice - firstdateprice) / firstdateprice * 100 # calculate percent difference between 2020 and 2000
+    percentperyear = round(percent/20, 2) # percent increase per year 
+    return percentperyear
 
 '''
 
