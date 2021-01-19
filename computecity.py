@@ -1,10 +1,15 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import datetime
 import os
-# from fbprophet import Prophet
 
+
+
+# necessary module for image
 import base64
 from io import BytesIO
+
+
 
 class suppress_stdout_stderr(object):
     '''
@@ -56,12 +61,20 @@ def plothistory(targetDF):
 
 
 def calcpercent(targetDF):
-    firstdateprice = targetDF['price'][0]
-    lastdate = '2020-01-31'
-    lastdateprice = targetDF.loc[targetDF['date']==lastdate]['price'].values[0] # obtain price at lastdate
+    firstdate = targetDF['date'][0]
+    lastdate = datetime.datetime.strptime('2020/01/31', '%Y/%m/%d') # year 2020 is hard-coded
+    firstdateprice = targetDF.loc[targetDF['date']==firstdate]['price'].values[0]
+    lastdateprice = targetDF.loc[targetDF['date']==lastdate]['price'].values[0] # get price at year 2020
+
+    datediff = lastdate - firstdate
+    yeardiff = datediff.days / 365
+
     percent = (lastdateprice - firstdateprice) / firstdateprice * 100 # calculate percent difference between 2020 and 2000
-    percentperyear = round(percent/20, 2) # percent increase per year 
-    return percentperyear
+    percentperyear = round(percent/yeardiff, 2) # percent increase per year 
+
+    latestdate = targetDF['date'].iloc[-1].strftime('%B %d, %Y')
+
+    return percentperyear, latestdate
 
 '''
 

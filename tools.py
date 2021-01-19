@@ -26,7 +26,7 @@ def getdatafromDB(regionID):
     targetDF = pd.DataFrame(target)
     return targetDF
 
-def capitalize_words(title):
+def capitalize_words(state):
     # Use for capitalization of state name
-    title = ' '.join(word[0].upper() + word[1:] for word in title.split(' '))
-    return title
+    state = ' '.join(word[0].upper() + word[1:] for word in state.split(' '))
+    return state

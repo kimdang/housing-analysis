@@ -49,8 +49,19 @@ def showResult(request):
     logger.info(requestData)
 
 
-    state = translateState.state_dictionary.get(tools.capitalize_words(state), state)
     # state names are abbreviated in MySQL database
+    # enable to handle state names that are lowercase state, abbreviated, etc.
+    if len(state) == 2:
+        state = state.upper()
+    else:
+        try:
+            state = translateState.state_dictionary.get(tools.capitalize_words(state), state)
+        except TypeError:
+            raise Http404('Invalid state. Please check your spelling!')
+
+    
+    # capitalize city name where appropriate 
+    city = tools.capitalize_words(city)
 
 
     try:
@@ -58,12 +69,13 @@ def showResult(request):
         regionid = execute.run_query(getIDquery, fetch=True, fetch_option='fetchone')['regionid']
         # get regionid from main_index table
     except TypeError:
-        raise Http404("Invalid Entry. Please check that your information is correct.")
+        raise Http404("Invalid location. Please check that your information is correct.")
+
 
     if regionid: 
         citydata = SQLtools.getDataFromDB(regionid, state)    
     else:
-        raise Http404("This location is not listed in database.")
+        raise Http404("This location is not in database.")
     
 
 
@@ -86,7 +98,7 @@ def showResult(request):
 
 
     # CALCULATE rise percentage
-    percentperyear = computecity.calcpercent(citydata['midtier'])
+    percentperyear, latestdate = computecity.calcpercent(citydata['midtier'])
 
 
     # # Convert into appropriat form for purpose of display
@@ -99,6 +111,7 @@ def showResult(request):
             'form' : form, 
             'citysummary': citysummary,
             'percentperyear' : percentperyear,
+            'latestdate' : latestdate,
             }
 
 
