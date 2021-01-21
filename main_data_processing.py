@@ -116,8 +116,9 @@ if sendToDatabase == 'yes':
             tempDict = load_obj("%soutput" %(tier))
             statelist = list(tempDict.keys())
 
-            for x in range(0, len(statelist), 5):
-                composite = statelist[x:x+5]
+            howmanyprocess = 3
+            for x in range(0, len(statelist), howmanyprocess):
+                composite = statelist[x:x+howmanyprocess]
                 print('Working on: ' + ' '.join(composite))
         
                 for state in composite:

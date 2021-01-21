@@ -1,13 +1,14 @@
 import pymysql 
+import credentials
 
 
 
 def run_query(query, fetch=False, fetch_option='fetchone'):
-    conn = pymysql.connect(host="10.0.0.161", 
-                        user="root",
-                        password="123456",
+    conn = pymysql.connect(host=credentials.db_host, 
+                        user=credentials.db_username,
+                        password=credentials.db_password,
                         charset="utf8mb4",
-                        db="housing_database",
+                        db=credentials.db_name,
                         cursorclass=pymysql.cursors.DictCursor)
 
 
